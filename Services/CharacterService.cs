@@ -1,3 +1,4 @@
+using MicroserviceExample.Common;
 using MicroserviceExample.Models;
 
 namespace MicroserviceExample.Services;
@@ -19,7 +20,7 @@ public class CharacterService
         Character? character = characters.FirstOrDefault((elem) => elem.Id == characterId);
 
         if (character == null)
-            throw new BadHttpRequestException($"The character with id '{characterId}' was not found.");
+            throw new AppException($"The character with id '{characterId}' was not found.", 400);
 
         return character;
     }

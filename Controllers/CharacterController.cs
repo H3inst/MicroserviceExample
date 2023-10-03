@@ -1,6 +1,7 @@
 using MicroserviceExample.Models;
 using MicroserviceExample.Services;
 using Microsoft.AspNetCore.Mvc;
+using MicroserviceExample.Common;
 
 namespace MicroserviceExample.Controllers;
 
@@ -18,19 +19,17 @@ public class CharacterController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<ServiceResponse<List<Character>>>> GetAll()
     {
-        var serviceResponse = new ServiceResponse<List<Character>>();
         try
         {
             var characters = await _characterService.GetAll();
-            serviceResponse.Data = characters;
+            var successResponse = ServiceResponse<List<Character>>.ThrowSuccessResponse(characters);
+            return Ok(successResponse);
         }
-        catch (Exception exception)
+        catch (AppException exception)
         {
-            serviceResponse.Success = false;
-            serviceResponse.Data = null;
-            serviceResponse.Message = exception.Message;
+            var errorResponse = ServiceResponse<string>.ThrowExceptionResponse(exception.Message);
+            return StatusCode(exception.HttpStatusCode, errorResponse);
         }
-        return Ok(serviceResponse);
     }
 
     [HttpGet("{characterId}")]
@@ -40,33 +39,29 @@ public class CharacterController : ControllerBase
         try
         {
             var character = await _characterService.GetById(characterId);
-            serviceResponse.Data = character;
+            var successResponse = ServiceResponse<Character>.ThrowSuccessResponse(character);
+            return Ok(serviceResponse);
         }
-        catch (Exception exception)
+        catch (AppException exception)
         {
-            serviceResponse.Success = false;
-            serviceResponse.Data = null;
-            serviceResponse.Message = exception.Message;
+            var errorResponse = ServiceResponse<string>.ThrowExceptionResponse(exception.Message);
+            return StatusCode(exception.HttpStatusCode, errorResponse);
         }
-        return Ok(serviceResponse);
     }
 
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<List<Character>>>> Add(Character characterPayload)
     {
-        var serviceResponse = new ServiceResponse<List<Character>>();
         try
         {
             var characters = await _characterService.Add(characterPayload);
-            serviceResponse.Data = characters;
+            var successResponse = ServiceResponse<List<Character>>.ThrowSuccessResponse(characters);
+            return Ok(successResponse);
         }
-        catch (Exception exception)
+        catch (AppException exception)
         {
-            serviceResponse.Success = false;
-            serviceResponse.Data = null;
-            serviceResponse.Message = exception.Message;
+            var errorResponse = ServiceResponse<string>.ThrowExceptionResponse(exception.Message);
+            return StatusCode(exception.HttpStatusCode, errorResponse);
         }
-
-        return Ok(serviceResponse);
     }
 }
